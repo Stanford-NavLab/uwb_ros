@@ -8,13 +8,13 @@ The UWB calibration is performed by the steps outlined in the [Setup](##Setup) a
 
 ## Setup
 
-**_NOTE:_** This procedure assumes you have 3 at least UWBs loaded with the proper firmware. See the uwb-firmware repository for instructions on building/flashing the UWB firmware as well as S1 switch configuration.  
+**_NOTE:_** This procedure assumes you have 3 at least UWBs loaded with the proper firmware. See the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware) repository for instructions on building/flashing the UWB firmware as well as S1 switch configuration.  
 
 ### Locate current calibration definitions
 
-Locate the `calibration` directory in the uwb-firmware repository. Look for a file that matches the 4 digit address or the last four digits of the 16 digit address of each UWB. If none exist for the address, create a new one.
+Locate the `calibration` directory in the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware) repository. Look for a file that matches the 4 digit address or the last four digits of the 16 digit address of each UWB. If none exist for the address, create a new one.
 
-The values in the calibration files correspond to the UWB firmware definitions found under `src/application/application_definitions.h`. When building and flashing the firmware be sure to copy/paste all of the calibration settings from the calibration file. After final calibration, make sure any changes are saved to the calibration files and uploaded to the repository.
+The values in the calibration files correspond to the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware) definitions found under `src/application/application_definitions.h`. When building and flashing the firmware be sure to copy/paste all of the calibration settings from the calibration file. After final calibration, make sure any changes are saved to the calibration files and uploaded to the repository.
 
 ```
 //Antenna delay per S1 channel config
@@ -32,7 +32,7 @@ The values in the calibration files correspond to the UWB firmware definitions f
 #define RX_ANT_DELAY_11            16460
 ```
 
-When building the firmware, make sure the following definition is set to 1 so the calibration values will be applied.
+When building the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware), make sure the following definition is set to 1 so the calibration values will be applied.
 
 ```
 #define SET_TXRX_DELAY 			1

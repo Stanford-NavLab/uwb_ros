@@ -17,7 +17,7 @@ rsl            | Received Signal Level (RSL) | (Float)                   | dB
 
 ### UWB Firmware
 
-This package requires that the EVK1000s be loaded with the firmware found in the `uwb-firmware` repository. It will not work with stock firmware. See the `uwb-firmware` repository for building and loading the correct firmware.
+This package requires that the EVK1000s be loaded with the firmware found in the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware) repository. It will not work with stock firmware. See the [uwb-firmware](https://github.com/Stanford-NavLab/uwb-firmware) repository for building and loading the correct firmware.
 
 ### Physical Connection
 <img src="img/uwb_connect.jpg" width="480">
