@@ -1,0 +1,18 @@
+<launch>
+    <node name="uwb_interface"
+          pkg="uwb_interface"
+          type="uwb_interface_node"
+          output="screen"
+          args="-p /dev/ttyACM0"
+    />
+    <node name="uwb_msg_unpacker"
+          pkg="uwb_interface"
+          type="uwb_msg_unpacker.py"
+          output="screen"
+    />
+    <node name="plotjuggler"
+          pkg="plotjuggler"
+          type="plotjuggler"
+          args="-n --layout $(find uwb_interface)/config/test.xml"
+    />
+</launch>

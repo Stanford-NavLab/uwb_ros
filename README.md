@@ -11,9 +11,5 @@ Welcome to the UWB ROS repository. Here you will find ROS nodes for calibrating 
 
 ## Package Specific Readme
 
-[UWB Interface Node](catkin_ws/src/uwb_interface/README.md)\
-[UWB Calibration](catkin_ws/src/uwb_delay_calibration/README.md)
-
-
-
-
+[UWB Interface Node](src/uwb_interface/README.md)\
+[UWB Calibration](src/uwb_delay_calibration/README.md)

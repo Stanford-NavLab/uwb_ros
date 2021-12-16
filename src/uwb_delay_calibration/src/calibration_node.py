@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import String
-from uwb_interface.msg import range_event
+from uwb_interface.msg import RangeEvent
 
 from enum import Enum
 from datetime import datetime
@@ -67,7 +67,7 @@ class CalibrationNode():
                 self.anchor_range_reports[key] = [0,0]
 
         rospy.init_node('uwb_calibration_node', anonymous=True)
-        rospy.Subscriber("uwb/range", range_event, self.range_callback)
+        rospy.Subscriber("uwb/range", RangeEvent, self.range_callback)
         self.rate = rospy.Rate(10) # 10hz
 
         print("Initializing")

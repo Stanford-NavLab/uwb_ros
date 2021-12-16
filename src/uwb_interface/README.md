@@ -47,7 +47,7 @@ Your terminal output should look something similar to the following. Since the U
 The UWB Interface package can be run with the following:
 
 ```
-rosrun uwb_interface uwb_interface_node -p /dev/ttyAMC0
+rosrun uwb_interface uwb_interface_node -p /dev/ttyACM0
 ```
 
 **_NOTE:_** Roscore must be running first.\
@@ -70,4 +70,12 @@ range_rsl: 741
 range_raw: 553
 rsl: -78.2990036011
 ---
+```
+
+## Troubleshooting
+If you get the error `Error 13 from open: Permission denied`, then likely the current user
+is not part of the dialout group. Add the user to the dialout group with the command below
+and then restart the computer.
+```
+sudo adduser $USER dialout
 ```
