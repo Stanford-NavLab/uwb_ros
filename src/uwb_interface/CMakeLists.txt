@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   message_generation
 )
 
@@ -71,6 +72,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 ################################################
@@ -105,7 +107,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES uwb_interface
-  CATKIN_DEPENDS roscpp std_msgs message_runtime
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -211,7 +213,7 @@ set(UWB_INTERFACE_HEADER
   "src/uwb_interface.h")
 set(UWB_INTERFACE_SRC
   "src/main.cpp"
-  "src/uwb_interface.cpp")  
+  "src/uwb_interface.cpp")
 
 add_executable(${PROJECT_NAME}_node ${UWB_INTERFACE_SRC} ${UWB_INTERFACE_HEADER})
 #target_include_directories(${PROJECT_NAME}_node PRIVATE ${UWB_INTERFACE_DIR})

@@ -13,10 +13,9 @@ __authors__ = "D. Knowles"
 __date__ = "16 Dec 2021"
 
 import rospy
-from std_msgs.msg import Float32
 from uwb_interface.msg import RangeEvent
 
-class Unpacker():
+class UWBUnpacker():
     """Unpacker class which unpacks UWB ranging messages.
 
     """
@@ -30,7 +29,7 @@ class Unpacker():
         self.publishers = {}
 
         # Initialize ROS node.
-        rospy.init_node('unpacker', anonymous=False)
+        rospy.init_node('uwb_unpacker', anonymous=False)
 
         # Subscribe to ranges and set callback function
         rospy.Subscriber("uwb/range/", RangeEvent, self.range_callback)
@@ -39,8 +38,6 @@ class Unpacker():
 
         # keeps python from exiting until the node is stopped
         rospy.spin()
-
-
 
 
     def range_callback(self, data):
@@ -79,7 +76,7 @@ class Unpacker():
 
 if __name__ == '__main__':
     try:
-        u = Unpacker()
+        u = UWBUnpacker()
         rospy.on_shutdown(u.cleanup)
     except rospy.ROSInterruptException:
         pass
