@@ -51,9 +51,10 @@ class UWBUnpacker():
         """
         if self.anchor_agnostic:
             ordered = sorted([data.anchor_address, data.tag_address])
-            topic_name = ordered[0] + "_" + ordered[1]
+            topic_name = ordered[0][-4:] + "_" + ordered[1][-4:]
         else:
-            topic_name = data.anchor_address + "_" + data.tag_address
+            topic_name = data.anchor_address[-4:] + "_" + data.tag_address[-4:]
+
 
         if topic_name not in self.publishers.keys():
             # create new publisher if it hasn't been created already

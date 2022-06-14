@@ -1,7 +1,13 @@
 # matching UWB flightroom mounts with UWB address IDs
 
-uwb_mount_1: "592B"
-uwb_mount_2: "5993"
-uwb_mount_3: "59AE"
-uwb_mount_4: "5895"
-uwb_mount_5: "5826"
+# uwb_mount_1: "592B"
+# uwb_mount_2: "5993"
+# uwb_mount_3: "59AE"
+# uwb_mount_4: "5895"
+# uwb_mount_5: "5826"
+
+uwb_mount_1: "141D"
+uwb_mount_2: "1639"
+uwb_mount_3: "5950"
+uwb_mount_4: "1B20"
+uwb_mount_5: "198C"
