@@ -13,6 +13,6 @@
     <node name="plotjuggler"
           pkg="plotjuggler"
           type="plotjuggler"
-          args="-n --layout $(find uwb_interface)/config/test.xml"
+          args="-n --layout $(find uwb_interface)/config/uwb5.xml"
     />
 </launch>
