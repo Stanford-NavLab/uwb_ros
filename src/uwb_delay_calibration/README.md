@@ -1,6 +1,6 @@
 # UWB Calibration Package
 
-The UWB Calibration Package is used to calibrate the EWB1000 RX and TX delays. The calibration is performed by collecting data from several ranging events between 3 or more UWBs at a known distance from each other. The difference between the averaged ranges and the known distances are then used to determine the position (and therefore timing) errors. The timing errors are used to find the RX and TX delays for each UWB. Finally, the calibration is completed by saving the RX and TX delays in the DW1000 firmware. 
+The UWB Calibration Package is used to calibrate the EVB1000 RX and TX delays. The calibration is performed by collecting data from several ranging events between 3 or more UWBs at a known distance from each other. The difference between the averaged ranges and the known distances are then used to determine the position (and therefore timing) errors. The timing errors are used to find the RX and TX delays for each UWB. Finally, the calibration is completed by saving the RX and TX delays in the DW1000 firmware. 
 
 # Calibration Procedure
 
