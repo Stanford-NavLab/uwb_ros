@@ -34,7 +34,7 @@ class UWBUnpacker():
         # Subscribe to ranges and set callback function
         rospy.Subscriber("uwb/range/", RangeEvent, self.range_callback)
 
-        print("Unpacking UWB range messages...")
+        rospy.loginfo("Unpacking UWB range messages...")
 
         # keeps python from exiting until the node is stopped
         rospy.spin()
@@ -51,14 +51,14 @@ class UWBUnpacker():
         """
         if self.anchor_agnostic:
             ordered = sorted([data.anchor_address, data.tag_address])
-            topic_name = ordered[0][-4:] + "_" + ordered[1][-4:]
+            topic_name = ordered[0] + "_" + ordered[1]
         else:
-            topic_name = data.anchor_address[-4:] + "_" + data.tag_address[-4:]
+            topic_name = data.anchor_address + "_" + data.tag_address
 
 
         if topic_name not in self.publishers.keys():
             # create new publisher if it hasn't been created already
-            self.publishers[topic_name] = rospy.Publisher("uwb/range_unpacked/" \
+            self.publishers[topic_name] = rospy.Publisher("uwb/data/" \
                                         + topic_name, RangeEvent,
                                         queue_size = 10)
 

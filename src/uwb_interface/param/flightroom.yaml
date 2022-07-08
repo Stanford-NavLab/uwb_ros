@@ -6,8 +6,8 @@
 # uwb_mount_4: "5895"
 # uwb_mount_5: "5826"
 
-uwb_mount_1: "141D"
-uwb_mount_2: "1639"
-uwb_mount_3: "5950"
-uwb_mount_4: "1B20"
-uwb_mount_5: "198C"
+uwb_mount_1: "000000000000141D"
+uwb_mount_2: "0000000000001639"
+uwb_mount_3: "0000000000005950"
+uwb_mount_4: "0000000000001B20"
+uwb_mount_5: "000000000000198C"
