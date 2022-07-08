@@ -1,6 +1,7 @@
-# UWB Antenna Delay Calibration Package
+# UWB Calibration Package
 
-# flightroom_calibration.py
+
+# Antenna Delay Calibration
 
 Inputs
 - truth range
@@ -13,7 +14,7 @@ Outputs
 
 # calibration_node
 
-The UWB Calibration Package is used to calibrate the EWB1000 RX and TX delays. The calibration is performed by collecting data from several ranging events between 3 or more UWBs at a known distance from each other. The difference between the averaged ranges and the known distances are then used to determine the position (and therefore timing) errors. The timing errors are used to find the RX and TX delays for each UWB. Finally, the calibration is completed by saving the RX and TX delays in the DW1000 firmware.
+The UWB Calibration Package is used to calibrate the EVB1000 RX and TX delays. The calibration is performed by collecting data from several ranging events between 3 or more UWBs at a known distance from each other. The difference between the averaged ranges and the known distances are then used to determine the position (and therefore timing) errors. The timing errors are used to find the RX and TX delays for each UWB. Finally, the calibration is completed by saving the RX and TX delays in the DW1000 firmware.
 
 ## Calibration Procedure
 
@@ -218,4 +219,6 @@ self.uwb_rxdelay = { #units are in DW1000 device time
 }
 ```
 
-The process should be repeated a few times for the best results. Once calibrated, the absolute difference between the programmed delays and calibration output should be 3 or less. If the numbers do not converge well after several attempts, you can look at the `calibration-date-time.csv` files generated to see which calibration values performed the best.
+==== BASE ====
+The process should be repeated a few times for the best results. Once calibrated, the absolute difference between the programmed delays and calibration output should be 3 or less. If the numbers do not converge well after several attempts, you can look at the `calibration-date-time.csv` files generated to see which calibration values performed the best. 
+==== BASE ====
