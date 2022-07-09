@@ -17,10 +17,10 @@ Publishes messages as Float32 messages to topics of the form:
 __authors__ = "D. Knowles"
 __date__ = "08 Jul 2022"
 
+import itertools
 from threading import Lock
 
 import rospy
-import itertools
 import numpy as np
 import message_filters
 from std_msgs.msg import Float32
@@ -34,17 +34,22 @@ class VRPNTruth():
 
         # Initialize ROS node.
         rospy.init_node('vrpn_truth', anonymous=False)
+
+        # retreive vrpn parameters
         vrpn_prefix = self.get_vrpn_prefix()
-        sync_slop = 0.125/rospy.get_param("vrpn_rate_hz")
-        print("ss:",sync_slop)
-        self.cc = 0
+        sync_slop = 0.5/rospy.get_param("vrpn_rate_hz")
 
-
+        # lock object for locking synchronizer variables
+        # locked to prevent race conditions during parallelized
+        # callbacks and main loop updated topic subscribers
         self.lock = Lock()
 
         # keep track of all created publishers
         self.publishers = {}
 
+        # keep track of current subscribers
+        self.subscribers = []
+        self.topic_names = []
 
         rate = rospy.Rate(1) # 1Hz
         while not rospy.is_shutdown():
@@ -52,24 +57,39 @@ class VRPNTruth():
             all_topics = rospy.get_published_topics()
             vrpn_topics = [x for x in all_topics if vrpn_prefix in x[0]]
 
-            subscribers = []
             topic_names_temp = []
-            for topic_name, topic_type in sorted(vrpn_topics):
-                # print(topic_name, topic_type)
-                sub = message_filters.Subscriber(topic_name, PoseStamped)
-                subscribers.append(sub)
+            for topic_name, _ in sorted(vrpn_topics):
                 topic_names_temp.append(topic_name)
 
-            with self.lock:
-                self.topic_names = topic_names_temp.copy()
-                synchronizer = message_filters.ApproximateTimeSynchronizer(subscribers,
-                               queue_size = 1, slop = sync_slop)
-                # synchronizer = message_filters.TimeSynchronizer(subscribers,
-                #                queue_size = 10)#, slop = synch_slop)
-                synchronizer.registerCallback(self.vrpn_callback)
+            if topic_names_temp != self.topic_names:
+                # update synchronizer if the current vrpn asset topics
+                # are not the same as the previous vrpn asset topics
+
+                with self.lock:
+                    # lock synchronizer and subscriber variables
+
+                    # need to unregister before registering to prevent
+                    # multiple callbacks from the same messages
+                    for sub in self.subscribers:
+                        sub.sub.unregister()
+
+                    self.topic_names = topic_names_temp.copy()
+
+                    self.subscribers = []
+                    for topic_name in self.topic_names:
+                        # add message_filter subscribers for each topic
+                        sub = message_filters.Subscriber(topic_name,
+                                                         PoseStamped)
+                        self.subscribers.append(sub)
+
+                    # create approximate syncronizer
+                    synchronizer = message_filters.ApproximateTimeSynchronizer(self.subscribers,
+                                   queue_size = 1, slop = sync_slop)
+
+                    # register callback function
+                    synchronizer.registerCallback(self.vrpn_callback)
 
             rate.sleep()
-
 
     def vrpn_callback(self, *msgs):
         """Callback function when new /uwb/range messages are published.
@@ -91,16 +111,10 @@ class VRPNTruth():
 
             # compute all possible combinations
             self.combos = list(itertools.combinations(range(0,len(msgs)), 2))
-            print(self.cc)
             for m_idx, msg_data in enumerate(msgs):
                 uwb_positions[m_idx,0] = msg_data.pose.position.x
                 uwb_positions[m_idx,1] = msg_data.pose.position.y
                 uwb_positions[m_idx,2] = msg_data.pose.position.z
-                print(self.topic_names[m_idx],msg_data.header.seq)
-
-            self.cc += 1
-            if self.cc >= 400:
-                hi
 
             for combo in self.combos:
                 asset_names = [self.topic_names[x].split("/")[-2]
