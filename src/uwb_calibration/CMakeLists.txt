@@ -10,6 +10,7 @@ project(uwb_calibration)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  uwb_interface
 )
 
 ## System dependencies are found with CMake's conventions
