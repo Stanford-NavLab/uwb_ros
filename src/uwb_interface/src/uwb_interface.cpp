@@ -20,7 +20,7 @@
 #include <sys/file.h>
 
 
-#include <bits/stdc++.h> //split serial input, strok()   
+#include <bits/stdc++.h> //split serial input, strok()
 #include <stdlib.h>     // strtod, strtol
 #include <chrono>
 
@@ -29,7 +29,7 @@
 
 namespace uwb_interface{
 
-    
+
     double ros_rate = 100.0;
     ros::Publisher uwb_range_pub;
     uwb_interface::RangeEvent range_msg;
@@ -38,18 +38,18 @@ namespace uwb_interface{
     int serial_port;
     bool serial_configured = false;
     bool port_open = false;
-    
-    
-    
+
+
+
     void ParseOptions(int argc, char **argv){
 
         int c;
         bool uwb_port_set = false;
-        
+
         while((c = getopt(argc, argv, "p:")) != -1){
             switch(c){
                 case 'p':
-                    uwb_port = optarg;    
+                    uwb_port = optarg;
                     uwb_port_set = true;
                     break;
                 default:
@@ -62,7 +62,7 @@ namespace uwb_interface{
             std::cout << "UWB serial port not set. Run with -p <serial/port/path>" << std::endl;
         }
         if(!uwb_port_set){
-            exit(EXIT_FAILURE);   
+            exit(EXIT_FAILURE);
         }
 
     }
@@ -74,8 +74,8 @@ namespace uwb_interface{
     }
 
     inline bool serialExists (const std::string& name) {
-        struct stat buffer;   
-        return (stat (name.c_str(), &buffer) == 0); 
+        struct stat buffer;
+        return (stat (name.c_str(), &buffer) == 0);
     }
 
     void Initialize(int argc, char **argv){
@@ -87,7 +87,7 @@ namespace uwb_interface{
         ros::NodeHandle nh;
 
         uwb_range_pub = nh.advertise<uwb_interface::RangeEvent>("uwb/range", 10);
-   
+
     }
 
     void Cleanup(){
@@ -119,7 +119,7 @@ namespace uwb_interface{
                 }
             }
 
-            //process and publish the serial data 
+            //process and publish the serial data
             if(n > 0){
                 publish_serial_data(read_buf, pos+1);
             }
@@ -127,14 +127,14 @@ namespace uwb_interface{
                 std::cout << "serial read error" << std::endl;
                 serial_configured = false;
             }
-            
+
         }else{
             check_setup_serial();
         }
     }
-    
+
     bool check_setup_serial(){
-        
+
         bool serial_okay = true;
 
         if(port_open){
@@ -163,7 +163,7 @@ namespace uwb_interface{
 
             if(serial_okay){
                 if(flock(serial_port, LOCK_EX | LOCK_NB) == -1) {
-                    throw std::runtime_error("Serial port with file descriptor " + 
+                    throw std::runtime_error("Serial port with file descriptor " +
                         std::to_string(serial_port) + " is already locked by another process.");
                     serial_okay = false;
                 }
@@ -180,7 +180,7 @@ namespace uwb_interface{
                     printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
                     serial_okay = false;
                 }
-                
+
                 tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
                 tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
                 tty.c_cflag |= CS8; // 8 bits per byte (most common)
@@ -203,13 +203,13 @@ namespace uwb_interface{
                 // cfsetospeed(&tty, B9600);
                 cfsetispeed(&tty, B115200);
                 cfsetospeed(&tty, B115200);
-            
+
                 // Save tty settings, also checking for error
                 if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
                     printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
                     serial_okay = false;
                 }
-                
+
                 //clear any data in the serial buffer //TODO make sure this works as expected!
                 sleep(2);
                 if (tcsetattr(serial_port, TCSAFLUSH, &tty) != 0) {
@@ -226,7 +226,7 @@ namespace uwb_interface{
             serial_okay = false;
         }
 
-        
+
 
         if(!serial_okay){
             serial_configured = false;
@@ -251,7 +251,7 @@ namespace uwb_interface{
         //The values are in contained in a single string separated by spaces
 
         //replace any carriage return (\r) in the character array with a space
-        char from = '\r';   
+        char from = '\r';
         char to = ' ';
         for(int i=0; i<buffer_length; i++)
         {
@@ -261,13 +261,13 @@ namespace uwb_interface{
             }
         }
 
-      
-        char *token = strtok(data, " "); 
-        
+
+        char *token = strtok(data, " ");
+
 
         int idx = 0;
 
-        while (token != NULL) 
+        while (token != NULL)
         {
             switch(idx)
             {
@@ -282,50 +282,50 @@ namespace uwb_interface{
                     if(!(strlen(token) == 4 || strlen(token) == 16)){
                         // printf("anchor address wrong length: %s \n", token);
                         return;
-                    }                     
+                    }
                     range_msg.anchor_address = token;
-            
+
                     break;
                 case 2: //tag address
                     if(!(strlen(token) == 4 || strlen(token) == 16)){
                         // printf("tag address wrong length: %s \n", token);
                         return;
-                    } 
-                    range_msg.tag_address = token; 
-                    
+                    }
+                    range_msg.tag_address = token;
+
                     break;
                 case 3: //distance corrected range
-                    
+
                     if(strlen(token) != 8){
                         // printf("distance corrected range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
-                    }                
+                    }
                     range_msg.range_dist = (int32_t)strtol(token, 0, 16);
-                    
+
                     break;
-                case 4: //rsl corrected range                     
+                case 4: //rsl corrected range
                     if(strlen(token) != 8){
                         // printf("rsl corrected range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
-                    }                 
+                    }
                     range_msg.range_rsl = (int32_t)strtol(token, 0, 16);
-                    
+
                     break;
                 case 5: //raw range
-                    
+
                     if(strlen(token) != 8){
                         // printf("raw range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
-                    }                  
+                    }
                     range_msg.range_raw = (int32_t)strtol(token, 0, 16);
-                    
+
                     break;
                 case 6: //rsl
-                    
+
                     if(strlen(token) != 8){
                         // printf("rsl data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
-                    }                  
+                    }
                     range_msg.rsl = ((float)((int32_t)strtol(token, 0, 16)))/1000.0;
 
                     break;
@@ -335,14 +335,16 @@ namespace uwb_interface{
             }
 
             token = strtok(NULL, " ");
-            idx++; 
+            idx++;
         }
 
         //add timestamp to message
+        // range_msg.header.stamp = ros::Time::now();
         const auto p1 = std::chrono::system_clock::now();
         uint64_t nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
                                 p1.time_since_epoch()).count();
         range_msg.timestamp = nanoseconds;
+
 
         uwb_range_pub.publish(range_msg);
     }

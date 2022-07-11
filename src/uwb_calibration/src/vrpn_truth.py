@@ -9,7 +9,7 @@ Expects that PoseStamped messages are being published on topics called:
 "<vrpn_prefix>/<vrpn_asset_name>/pose" where <vrpn_prefix> and
 <vrpn_asset_name>  are defined in uwb_calibration/param/vrpn.yaml
 
-Publishes messages as Float32 messages to topics of the form:
+Publishes messages as RangeStamped messages to topics of the form:
 "/uwb/range_truth/UWBIdentifierA_UWBIdentifierB"
 
 """
@@ -23,8 +23,8 @@ from threading import Lock
 import rospy
 import numpy as np
 import message_filters
-from std_msgs.msg import Float32
 from geometry_msgs.msg import PoseStamped
+from uwb_interface.msg import RangeStamped
 
 class VRPNTruth():
     """Unpacker class which unpacks flighroom VRPN messages.
@@ -94,12 +94,15 @@ class VRPNTruth():
     def vrpn_callback(self, *msgs):
         """Callback function when new /uwb/range messages are published.
 
+        Unpacks the position of the UWBs and publishes the distance
+        between each pair of UWBs on a new topic.
+
         Parameters
         ----------
-        data : ROS uwb/range message
-            Data from the topic that was published.
-        asset_name : string
-            returns asset name with which data is associated
+        msgs : list
+            List of PoseStamped messages from the vrpn subscriber.
+            Number of msgs is arbitrary.
+
         """
 
         with self.lock:
@@ -110,13 +113,13 @@ class VRPNTruth():
             uwb_positions = np.zeros((len(msgs),3))
 
             # compute all possible combinations
-            self.combos = list(itertools.combinations(range(0,len(msgs)), 2))
+            combos = list(itertools.combinations(range(0,len(msgs)), 2))
             for m_idx, msg_data in enumerate(msgs):
                 uwb_positions[m_idx,0] = msg_data.pose.position.x
                 uwb_positions[m_idx,1] = msg_data.pose.position.y
                 uwb_positions[m_idx,2] = msg_data.pose.position.z
 
-            for combo in self.combos:
+            for combo in combos:
                 asset_names = [self.topic_names[x].split("/")[-2]
                                for x in combo]
                 uwb_ids = sorted([rospy.get_param(x)
@@ -125,16 +128,18 @@ class VRPNTruth():
                 topic_name = "/uwb/range_truth/" + uwb_ids[0] + "_" \
                            + uwb_ids[1]
 
-                if topic_name not in self.publishers.keys():
+                if topic_name not in self.publishers:
                     # create new publisher if it hasn't been created already
                     self.publishers[topic_name] = rospy.Publisher(topic_name,
-                                                Float32, queue_size = 10)
+                                                  RangeStamped,
+                                                  queue_size = 100)
 
-                new_msg = Float32()
+                new_msg = RangeStamped()
                 new_msg_data = np.linalg.norm(uwb_positions[combo[1],:] \
                                             - uwb_positions[combo[0],:])
                 new_msg_data *= 1000 # conversion from [m] to [mm]
-                new_msg.data = new_msg_data
+                new_msg.range = new_msg_data
+                new_msg.header = msg_data.header
 
                 self.publishers[topic_name].publish(new_msg)
 

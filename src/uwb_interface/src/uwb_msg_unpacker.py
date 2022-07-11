@@ -13,7 +13,7 @@ __authors__ = "D. Knowles"
 __date__ = "16 Dec 2021"
 
 import rospy
-from uwb_interface.msg import RangeEvent
+from uwb_interface.msg import RangeEvent, UWBRange
 
 class UWBUnpacker():
     """Unpacker class which unpacks UWB ranging messages.
@@ -59,10 +59,21 @@ class UWBUnpacker():
         if topic_name not in self.publishers.keys():
             # create new publisher if it hasn't been created already
             self.publishers[topic_name] = rospy.Publisher("uwb/data/" \
-                                        + topic_name, RangeEvent,
+                                        + topic_name, UWBRange,
                                         queue_size = 10)
 
-        self.publishers[topic_name].publish(data)
+        msg_data = UWBRange()
+        msg_data.header.stamp = rospy.Time.now()
+        msg_data.timestamp = data.timestamp
+        msg_data.source_address = data.source_address
+        msg_data.anchor_address = data.anchor_address
+        msg_data.tag_address = data.tag_address
+        msg_data.range_dist = data.range_dist
+        msg_data.range_rsl = data.range_rsl
+        msg_data.range_raw = data.range_raw
+        msg_data.rsl = data.rsl
+
+        self.publishers[topic_name].publish(msg_data)
 
 
     def cleanup(self):

@@ -29,8 +29,9 @@ __authors__ = "D. Knowles"
 __date__ = "08 Jul 2022"
 
 import rospy
-from std_msgs.msg import Float32
-from message_filters import Cache
+import numpy as np
+import message_filters
+from uwb_interface.msg import RangeStamped
 
 class AntennaDelayCalibration():
     """Calibration class which unpacks UWB ranging messages.
@@ -39,68 +40,130 @@ class AntennaDelayCalibration():
     def __init__(self):
 
         # keep track of all range_truth subscribers
-        self.truth_subscribers = []
+        self.truth_subscribers = set()
+        self.truth_cache = {}
 
         # keep track of all range_measured subscribers
-        self.measured_subscribers = []
+        self.measured_subscribers = set()
+
+        # error for ranges
+        self.range_error = {}
 
         # Initialize ROS node.
         rospy.init_node('antenna_delay_calibration', anonymous=False)
+        rospy.on_shutdown(self.cleanup)
         rate = rospy.Rate(1) # 1Hz
 
         while not rospy.is_shutdown():
 
-            all_topics = rospy.get_published_topics()
-            rospy.loginfo("log %s",all_topics)
 
-            measured_topics = [x for x in all_topics if "/range_measured/" in x[0]]
-            truth_topics = [x for x in all_topics if "/range_truth/" in x[0]]
+            all_topics = rospy.get_published_topics()
+
+            # update measured topics
+            measured_topics = {x[0] for x in all_topics if "/uwb/range_measured/" in x[0]}
+            new_measured_topics = measured_topics - self.measured_subscribers
+            if len(new_measured_topics) > 0:
+                self.subscribe_to_all(new_measured_topics)
+
+            truth_topics = {x[0] for x in all_topics if "/uwb/range_truth/" in x[0]}
+            new_truth_topics = truth_topics - self.truth_subscribers
+            if len(new_truth_topics) > 0:
+                self.cache_all(new_truth_topics)
 
             rate.sleep()
 
-    def subscribe_to_all(self, current_topics, subscribed_topics):
+    def subscribe_to_all(self, current_topics):
         """Subscribes to all new topics and adds to dictionary.
 
         Parameters
         ----------
         current_topics : list
             List of [topic_name, topic_type]
-        subscribed_topics : list
-            List of topics to which the node is already subscribing.
 
         """
-        for topic_name, topic_type in current_topics:
-            if topic_name not in subscribed_topics:
-                # Subscribe to topic and set callback function
-                rospy.Subscriber("range_measured/range/", Float32, self.measured_callback)
+
+        for topic_name in current_topics:
+            # Subscribe to topic and set callback function
+
+            sorted_topic_name = self.get_sorted_name(topic_name)
+
+            rospy.Subscriber(topic_name, RangeStamped,
+                             callback = self.measured_callback,
+                             callback_args = sorted_topic_name)
+            self.measured_subscribers.add(topic_name)
+            self.range_error[sorted_topic_name] = []
+
+    def cache_all(self, current_topics):
+        """Subscribes to new topics and creates message_filters cache.
+
+        Parameters
+        ----------
+        current_topics : list
+            List of [topic_name, topic_type]
+
+        """
+        for topic_name in current_topics:
+            # Subscribe to topic and set cache
+            sub = message_filters.Subscriber(topic_name, RangeStamped)
+
+            sorted_topic_name = self.get_sorted_name(topic_name)
+
+            self.truth_cache[sorted_topic_name] = message_filters.Cache(sub, 100)
+            self.truth_subscribers.add(topic_name)
 
 
-    def measured_callback(self, data):
+    def measured_callback(self, data_measured, sorted_topic_name):
         """Callback function when new /range_measured/ messages are published.
 
         Parameters
         ----------
-        data : ROS /range_measured/ Int32 message
+        data_measured : ROS /range_measured/ RangeStamped message
             Data from the topic that was published.
+        sorted_topic_name : string
+            Topic name for which this callback function was called.
 
         """
-        rospy.loginfo("data:",data)
 
-        # if self.anchor_agnostic:
-        #     ordered = sorted([data.anchor_address, data.tag_address])
-        #     topic_name = ordered[0][-4:] + "_" + ordered[1][-4:]
-        # else:
-        #     topic_name = data.anchor_address[-4:] + "_" + data.tag_address[-4:]
-        #
-        #
-        # if topic_name not in self.publishers.keys():
-        #     # create new publisher if it hasn't been created already
-        #     self.publishers[topic_name] = rospy.Publisher("uwb/range_unpacked/" \
-        #                                 + topic_name, RangeEvent,
-        #                                 queue_size = 10)
-        #
-        # self.publishers[topic_name].publish(data)
+        if sorted_topic_name in self.truth_cache:
 
+            timestamp_measured = data_measured.header.stamp
+            data_truth = self.truth_cache[sorted_topic_name].getElemBeforeTime(timestamp_measured)
+
+            if data_truth is None:
+                rospy.logwarn("No truth measurement before timestamp for %s",sorted_topic_name)
+                return
+
+            timestamp_truth = data_truth.header.stamp
+            if (timestamp_measured.to_sec() - timestamp_truth.to_sec()) > 1.0:
+                rospy.logwarn("Truth data older than one second for %s", sorted_topic_name)
+                return
+
+
+            self.range_error[sorted_topic_name].append(data_truth.range - data_measured.range)
+
+        else:
+            rospy.logwarn("No truth yet for %s",sorted_topic_name)
+            rospy.logwarn("Current truth topics are %s:",self.truth_cache.keys())
+
+
+    def get_sorted_name(self, topic_name):
+        """Get new topic name sorted alphnumerically
+
+        Parameters
+        ----------
+        topic_name : string
+            Current full topic name
+
+        Returns
+        -------
+        sorted_name : string
+            New topic name, but sorted alphabetically
+
+        """
+        name_list = topic_name.split("/")[-1]
+        uwb_identifiers = sorted(name_list.split("_"))
+        sorted_name = "_".join(uwb_identifiers)
+        return sorted_name
 
     def cleanup(self):
         """Gets called with Exceptions.
@@ -109,6 +172,12 @@ class AntennaDelayCalibration():
         prevent data loss.
 
         """
+
+        for key, value in self.range_error.items():
+            print(key)
+            value = np.array(value)
+            print(np.min(value),np.mean(value),np.max(value))
+
         print("closing safely")
 
 
