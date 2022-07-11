@@ -39,6 +39,6 @@
           pkg="rosbag"
           type="play"
           output="screen"
-          args="--clock /home/derek/datasets/uwb/circle_static_v2_2022-06-14-12-01-16.bag"/>
+          args="--clock <rosbag location>"/>
 
 </launch>
