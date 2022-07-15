@@ -64,10 +64,10 @@ class UWBMeasured():
         new_msg.range = data.range_raw
 
         # use RangeEvent timestamp as the header timestamp
-        new_msg.header.stamp = rospy.Time.from_sec(data.timestamp/1E9)
+        # new_msg.header.stamp = rospy.Time.from_sec(data.timestamp/1E9)
 
         # use current ROS time as the header timestamp
-        # new_msg.header.stamp = data.header.stamp
+        new_msg.header.stamp = data.header.stamp
 
         if topic_name not in self.publishers:
             # create new publisher if it hasn't been created already

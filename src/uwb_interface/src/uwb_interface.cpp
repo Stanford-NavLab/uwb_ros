@@ -5,7 +5,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
-#include <uwb_interface/RangeEvent.h>
+#include <uwb_interface/UWBRange.h>
 
 // C library headers
 #include <stdio.h> // printf, NULL
@@ -32,7 +32,7 @@ namespace uwb_interface{
 
     double ros_rate = 100.0;
     ros::Publisher uwb_range_pub;
-    uwb_interface::RangeEvent range_msg;
+    uwb_interface::UWBRange range_msg;
 
     std::string uwb_port = "";
     int serial_port;
@@ -86,7 +86,7 @@ namespace uwb_interface{
         ros::init(argc, argv, "uwb_interface_node" + port + "_" + std::to_string(getTimeMicro()));
         ros::NodeHandle nh;
 
-        uwb_range_pub = nh.advertise<uwb_interface::RangeEvent>("uwb/range", 10);
+        uwb_range_pub = nh.advertise<uwb_interface::UWBRange>("uwb/range", 10);
 
     }
 
@@ -339,7 +339,7 @@ namespace uwb_interface{
         }
 
         //add timestamp to message
-        // range_msg.header.stamp = ros::Time::now();
+        range_msg.header.stamp = ros::Time::now();
         const auto p1 = std::chrono::system_clock::now();
         uint64_t nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
                                 p1.time_since_epoch()).count();

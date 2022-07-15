@@ -1,5 +1,13 @@
 <launch>
 
+    <!-- launches UWB interface node -->
+    <node name="uwb_interface"
+          pkg="uwb_interface"
+          type="uwb_interface_node"
+          output="screen"
+          args="-p /dev/ttyACM0"
+    />
+
     <!-- Unpacks UWB range messages into /uwb/data/* -->
     <node name="uwb_msg_unpacker"
           pkg="uwb_interface"
