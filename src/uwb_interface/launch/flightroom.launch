@@ -47,11 +47,4 @@
       </rosparam>
     </node>
 
-
-    <!-- <node name="plotjuggler"
-          pkg="plotjuggler"
-          type="plotjuggler"
-          args="-n --layout $(find uwb_interface)/config/flightroom5.xml"
-    /> -->
-
 </launch>
