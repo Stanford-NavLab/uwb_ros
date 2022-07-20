@@ -21,11 +21,6 @@
           output="screen"
     />
 
-    <node name="plotjuggler"
-          pkg="plotjuggler"
-          type="plotjuggler"
-          args="-n --layout $(find uwb_interface)/config/flightroom5.xml"
-    />
 
     <arg name="server" default="mocap.local"/>
 
@@ -51,6 +46,5 @@
         #- SecondTracker
       </rosparam>
     </node>
-
 
 </launch>

@@ -13,7 +13,7 @@ __authors__ = "D. Knowles"
 __date__ = "16 Dec 2021"
 
 import rospy
-from uwb_interface.msg import RangeEvent, UWBRange
+from uwb_interface.msg import UWBRange
 
 class UWBUnpacker():
     """Unpacker class which unpacks UWB ranging messages.
@@ -32,7 +32,7 @@ class UWBUnpacker():
         rospy.init_node('uwb_unpacker', anonymous=False)
 
         # Subscribe to ranges and set callback function
-        rospy.Subscriber("uwb/range/", RangeEvent, self.range_callback)
+        rospy.Subscriber("uwb/range/", UWBRange, self.range_callback)
 
         rospy.loginfo("Unpacking UWB range messages...")
 
@@ -63,7 +63,8 @@ class UWBUnpacker():
                                         queue_size = 10)
 
         msg_data = UWBRange()
-        msg_data.header.stamp = rospy.Time.now()
+        # msg_data.header.stamp = rospy.Time.now()
+        msg_data.header = data.header
         msg_data.timestamp = data.timestamp
         msg_data.source_address = data.source_address
         msg_data.anchor_address = data.anchor_address
