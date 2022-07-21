@@ -54,7 +54,7 @@ class VRPNUnpacker():
                                         queue_size = 10)
 
         for ii in range(1,self.num_mounts+1):
-            # Subscribe to ranges and set callback function
+            # Subscribe to poses and set callback function
             asset_name = "uwb_mount_" + str(ii)
             rospy.Subscriber("vrpn_client_node/" + asset_name + "/pose",
                              PoseStamped, self.vrpn_callback, asset_name)
