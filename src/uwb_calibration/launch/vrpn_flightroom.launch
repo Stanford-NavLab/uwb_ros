@@ -1,4 +1,6 @@
 <launch>
+
+    <!-- launches UWB interface node -->
     <node name="uwb_interface"
           pkg="uwb_interface"
           type="uwb_interface_node"
@@ -6,25 +8,28 @@
           args="-p /dev/ttyACM0"
     />
 
-    <node name="uwb_msg_unpacker"
-          pkg="uwb_interface"
-          type="uwb_msg_unpacker.py"
+    <!-- Unpacks UWB range messages into /uwb/range_measured/* -->
+    <node name="uwb_measured"
+          pkg="uwb_calibration"
+          type="uwb_measured.py"
           output="screen"
     />
 
-    <!-- load asset name conversions -->
-    <rosparam command="load" file="$(find uwb_interface)/param/flightroom.yaml"/>
+    <!-- load asset name to UWB identifier conversions -->
+    <rosparam command="load" file="$(find uwb_calibration)/param/vrpn.yaml"/>
 
-    <node name="vrpn_msg_unpacker"
-          pkg="uwb_interface"
-          type="vrpn_msg_unpacker.py"
+    <!-- obtain truth ranges from vrpn -->
+    <node name="vrpn_truth"
+          pkg="uwb_calibration"
+          type="vrpn_truth.py"
           output="screen"
     />
 
-    <node name="plotjuggler"
-          pkg="plotjuggler"
-          type="plotjuggler"
-          args="-n --layout $(find uwb_interface)/config/flightroom5.xml"
+    <!-- run antenna delay calibration node -->
+    <node name="antenna_delay_calibration"
+          pkg="uwb_calibration"
+          type="antenna_delay_calibration.py"
+          output="screen"
     />
 
     <arg name="server" default="mocap.local"/>

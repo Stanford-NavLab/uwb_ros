@@ -1,0 +1,37 @@
+<launch>
+
+    # use simulation time
+    <param name="/use_sim_time" value="true" />
+
+    <!-- Unpacks UWB range messages into /uwb/range_measured/* -->
+    <node name="uwb_measured"
+          pkg="uwb_calibration"
+          type="uwb_measured.py"
+          output="screen"
+    />
+
+    <!-- load asset name to UWB identifier conversions -->
+    <rosparam command="load" file="$(find uwb_calibration)/param/vrpn.yaml"/>
+
+    <!-- obtain truth ranges from vrpn -->
+    <node name="vrpn_truth"
+          pkg="uwb_calibration"
+          type="vrpn_truth.py"
+          output="screen"
+    />
+
+    <!-- run antenna delay calibration node -->
+    <node name="antenna_delay_calibration"
+          pkg="uwb_calibration"
+          type="antenna_delay_calibration.py"
+          output="screen"
+    />
+
+    <!-- play from rosbag -->
+    <node name="rosbag_play"
+          pkg="rosbag"
+          type="play"
+          output="screen"
+          args="--clock <rosbag location>"/>
+
+</launch>

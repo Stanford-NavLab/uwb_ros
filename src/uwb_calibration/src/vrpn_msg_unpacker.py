@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Republishes VRPN client messages into UWB ranging paris.
+"""Republishes VRPN client messages into UWB ranging pairs.
 
 Subscribes to /vrpn_client_node/assest/pose messages and then repacks
 them into individual pair ranges. Converts asset names to UWB address
 IDs using conversions placed in .yaml parameter file.
+
+Publishes messages as Float32 messages to topics of the form:
+"/uwb/vrpn_unpacked/UWBIdentifierA_UWBIdentifierB"
 
 """
 
@@ -18,7 +21,7 @@ import scipy.spatial.distance as dist
 from geometry_msgs.msg import PoseStamped
 
 class VRPNUnpacker():
-    """Unpacker class which unpacks UWB ranging messages.
+    """Unpacker class which unpacks flighroom VRPN messages.
 
     """
     def __init__(self):
@@ -51,7 +54,7 @@ class VRPNUnpacker():
                                         queue_size = 10)
 
         for ii in range(1,self.num_mounts+1):
-            # Subscribe to ranges and set callback function
+            # Subscribe to poses and set callback function
             asset_name = "uwb_mount_" + str(ii)
             rospy.Subscriber("vrpn_client_node/" + asset_name + "/pose",
                              PoseStamped, self.vrpn_callback, asset_name)
