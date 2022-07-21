@@ -1,45 +1,16 @@
 #include "uwb_interface.h"
-#include <typeinfo>
-#include <iostream>
-#include <algorithm>
-
-#include <ros/ros.h>
-#include <std_msgs/Float64.h>
-#include <uwb_interface/UWBRange.h>
-
-// C library headers
-#include <stdio.h> // printf, NULL
-#include <string>
-#include <sstream>
-
-// Linux headers
-#include <fcntl.h> // Contains file controls like O_RDWR
-#include <errno.h> // Error integer and strerror() function
-#include <termios.h> // Contains POSIX terminal control definitions
-#include <unistd.h> // write(), read(), close()
-#include <sys/file.h>
-
-
-#include <bits/stdc++.h> //split serial input, strok()
-#include <stdlib.h>     // strtod, strtol
-#include <chrono>
-
-#include <sys/stat.h>
-
 
 namespace uwb_interface{
 
 
     double ros_rate = 100.0;
-    ros::Publisher uwb_range_pub;
     uwb_interface::UWBRange range_msg;
 
     std::string uwb_port = "";
     int serial_port;
     bool serial_configured = false;
     bool port_open = false;
-
-
+    std::map<std::string, ros::Publisher> publishers;
 
     void ParseOptions(int argc, char **argv){
 
@@ -84,9 +55,7 @@ namespace uwb_interface{
         std::replace( port.begin(), port.end(), '/', '_');
         //initialize ROS
         ros::init(argc, argv, "uwb_interface_node" + port + "_" + std::to_string(getTimeMicro()));
-        ros::NodeHandle nh;
-
-        uwb_range_pub = nh.advertise<uwb_interface::UWBRange>("uwb/range", 10);
+        ros::Time::init();
 
     }
 
@@ -235,6 +204,30 @@ namespace uwb_interface{
         return serial_okay;
     }
 
+
+    /*!
+       \brief Convert anchor address to sorted topic name.
+              It sorts the tag and anchor in alphabetical order assuming
+              that both addresses have the same number of characters.
+       \param anchor_address Anchor address as a string.
+       \param tag_address Tag address as a string.
+       \return Combined topic name in sorted order.
+    */
+    std::string get_topic_name(std::string anchor_address, std::string tag_address)
+    {
+        std::string topic_name;
+
+        if (anchor_address.compare(tag_address) <= 0)
+        {
+            topic_name = "uwb/data/" + anchor_address + "_" + tag_address;
+        }
+        else
+        {
+            topic_name = "uwb/data/" + tag_address + "_" + anchor_address;
+        }
+        return topic_name;
+    }
+
     void publish_serial_data(char data[], int buffer_length)
     {
         //the UWB sends a single string with the following information over USB for each range calculation:
@@ -334,18 +327,31 @@ namespace uwb_interface{
                     break;
             }
 
+
+
             token = strtok(NULL, " ");
             idx++;
         }
 
         //add timestamp to message
         range_msg.header.stamp = ros::Time::now();
-        const auto p1 = std::chrono::system_clock::now();
-        uint64_t nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                p1.time_since_epoch()).count();
-        range_msg.timestamp = nanoseconds;
 
+        // get topic name based on tag and anchor names
+        std::string topic_name = get_topic_name(range_msg.anchor_address, range_msg.tag_address);
 
-        uwb_range_pub.publish(range_msg);
+        if (!publishers.count(topic_name))
+        {
+            ROS_INFO("adding new publisher as %s", topic_name.c_str());
+
+            // create new publisher if it doesn't yet exist
+            ros::NodeHandle nh;
+            ros::Publisher new_publisher;
+            new_publisher = nh.advertise<uwb_interface::UWBRange>(topic_name, 10);
+
+            publishers.insert({topic_name, new_publisher});
+        }
+
+        publishers[topic_name].publish(range_msg);
+
     }
 }

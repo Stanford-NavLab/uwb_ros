@@ -3,13 +3,6 @@
     # use simulation time
     <param name="/use_sim_time" value="true" />
 
-    <!-- Unpacks UWB range messages into /uwb/data/* -->
-    <node name="uwb_msg_unpacker"
-          pkg="uwb_interface"
-          type="uwb_msg_unpacker.py"
-          output="screen"
-    />
-
     <!-- Unpacks UWB range messages into /uwb/range_measured/* -->
     <node name="uwb_measured"
           pkg="uwb_calibration"

@@ -142,8 +142,8 @@ class AntennaDelayCalibration():
             self.range_error[sorted_topic_name].append(data_truth.range - data_measured.range)
 
         else:
-            rospy.logwarn("No truth yet for %s",sorted_topic_name)
-            rospy.logwarn("Current truth topics are %s:",self.truth_cache.keys())
+            rospy.logwarn_throttle(1,"No truth yet for %s",sorted_topic_name)
+            # rospy.logwarn("Current truth topics are %s:",self.truth_cache.keys())
 
 
     def get_sorted_name(self, topic_name):
