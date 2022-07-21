@@ -61,7 +61,7 @@ class UWBMeasured():
         """
 
         new_msg = RangeStamped()
-        new_msg.range = data.range_raw
+        new_msg.range = data.range_raw_mm
 
         # use RangeEvent timestamp as the header timestamp
         # new_msg.header.stamp = rospy.Time.from_sec(data.timestamp/1E9)

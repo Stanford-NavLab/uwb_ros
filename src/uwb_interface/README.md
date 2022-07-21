@@ -3,15 +3,15 @@
 The UWB Interface package was designed to publish ranging data received from the EVK1000 to a ROS topic. The EVK1000s perform two way ranging with each other and output hexedecimal encoded results for each ranging exchange to their microUSB ports. This node is meant to be run on a separate computer to receive decode, and repackage the data so it can be published to the `/uwb/range` ROS topic. The repackaged data has the following characteristics:
 
 Field | Description | Data Type/Size | Units
---- | --- | --- | --- 
+--- | --- | --- | ---
 timestamp      | Time Stamp                  | (64 bit integer)          | µs
 source_address | Source Address              | (16 character hex string) |
-anchor_address | Anchor Address              | (16 character hex string) | 
-tag_address    | Tag Address                 | (16 character hex string) | 
-range_dist     | Range (distance correctted) | (32 bit integer)          | mm
-range_rsl      | Range (RSL correctted)      | (32 bit integer)          | mm
-range_raw      | Range (uncorrected)         | (32 bit integer)          | mm
-rsl            | Received Signal Level (RSL) | (Float)                   | dB
+anchor_address | Anchor Address              | (16 character hex string) |
+tag_address    | Tag Address                 | (16 character hex string) |
+range_dist_mm  | Range (distance correctted) | (32 bit integer)          | mm
+range_rsl_mm   | Range (RSL correctted)      | (32 bit integer)          | mm
+range_raw_mm   | Range (uncorrected)         | (32 bit integer)          | mm
+rsl_db         | Received Signal Level (RSL) | (Float)                   | dB
 
 ## Setup
 
@@ -32,7 +32,7 @@ After connecting the USB cable, run the following to output the tty devices dete
 dmesg | grep tty
 ```
 
-Your terminal output should look something similar to the following. Since the UWB was the most recently connected USB device, `/dev/ttyACM0` should be used. 
+Your terminal output should look something similar to the following. Since the UWB was the most recently connected USB device, `/dev/ttyACM0` should be used.
 
 ```
 [    0.000000] console [tty0] enabled
@@ -65,9 +65,9 @@ If functioning correctly, messages similar to the following should periodically 
 source_address: "0000000000001639"                          
 anchor_address: "0000000000001639"                          
 tag_address: "0000000000000CD6"                             
-range_dist: 776                                             
-range_rsl: 741                                              
-range_raw: 553
+range_dist_mm: 776                                             
+range_rsl_mm: 741                                              
+range_raw_mm: 553
 rsl: -78.2990036011
 ---
 ```

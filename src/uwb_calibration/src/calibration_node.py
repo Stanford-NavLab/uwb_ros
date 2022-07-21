@@ -88,10 +88,10 @@ class CalibrationNode():
             if len(self.uwb_ranges[key]) < self.num_measurements:
                 if data.anchor_address == key[0] and self.anchor_range_reports[key][0] < self.num_measurements/2:
                     self.anchor_range_reports[key][0] = self.anchor_range_reports[key][0] + 1
-                    self.uwb_ranges[key].append(data.range_rsl)
+                    self.uwb_ranges[key].append(data.range_rsl_mm)
                 elif data.anchor_address == key[1] and self.anchor_range_reports[key][1] < self.num_measurements/2:
                     self.anchor_range_reports[key][1] = self.anchor_range_reports[key][1] + 1
-                    self.uwb_ranges[key].append(data.range_rsl)
+                    self.uwb_ranges[key].append(data.range_rsl_mm)
                 
 
     # convert seconds to device time

@@ -293,7 +293,7 @@ namespace uwb_interface{
                         // printf("distance corrected range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
                     }
-                    range_msg.range_dist = (int32_t)strtol(token, 0, 16);
+                    range_msg.range_dist_mm = (int32_t)strtol(token, 0, 16);
 
                     break;
                 case 4: //rsl corrected range
@@ -301,7 +301,7 @@ namespace uwb_interface{
                         // printf("rsl corrected range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
                     }
-                    range_msg.range_rsl = (int32_t)strtol(token, 0, 16);
+                    range_msg.range_rsl_mm = (int32_t)strtol(token, 0, 16);
 
                     break;
                 case 5: //raw range
@@ -310,16 +310,16 @@ namespace uwb_interface{
                         // printf("raw range data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
                     }
-                    range_msg.range_raw = (int32_t)strtol(token, 0, 16);
+                    range_msg.range_raw_mm = (int32_t)strtol(token, 0, 16);
 
                     break;
-                case 6: //rsl
+                case 6: //rsl_db
 
                     if(strlen(token) != 8){
-                        // printf("rsl data size incorrect: %s length: %lu \n", token, strlen(token));
+                        // printf("rsl_db data size incorrect: %s length: %lu \n", token, strlen(token));
                         return;
                     }
-                    range_msg.rsl = ((float)((int32_t)strtol(token, 0, 16)))/1000.0;
+                    range_msg.rsl_db = ((float)((int32_t)strtol(token, 0, 16)))/1000.0;
 
                     break;
                 default:

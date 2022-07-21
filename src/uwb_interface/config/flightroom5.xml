@@ -10,16 +10,16 @@
         <plot style="Lines" mode="TimeSeries">
          <range right="29.626144" top="5839.200000" bottom="1126.800000" left="9.585041"/>
          <limitY/>
-         <curve name="/uwb/range_unpacked/141D_1B20/range_rsl" color="#d62728"/>
-         <curve name="/uwb/range_unpacked/141D_5950/range_rsl" color="#9467bd"/>
-         <curve name="/uwb/range_unpacked/141D_1639/range_rsl" color="#17becf"/>
-         <curve name="/uwb/range_unpacked/198C_5950/range_rsl" color="#bcbd22"/>
-         <curve name="/uwb/range_unpacked/141D_198C/range_rsl" color="#1f77b4"/>
-         <curve name="/uwb/range_unpacked/198C_1B20/range_rsl" color="#d62728"/>
-         <curve name="/uwb/range_unpacked/1639_198C/range_rsl" color="#1ac938"/>
-         <curve name="/uwb/range_unpacked/1B20_5950/range_rsl" color="#ff7f0e"/>
-         <curve name="/uwb/range_unpacked/1639_1B20/range_rsl" color="#f14cc1"/>
-         <curve name="/uwb/range_unpacked/1639_5950/range_rsl" color="#9467bd"/>
+         <curve name="/uwb/range_unpacked/141D_1B20/range_rsl_mm" color="#d62728"/>
+         <curve name="/uwb/range_unpacked/141D_5950/range_rsl_mm" color="#9467bd"/>
+         <curve name="/uwb/range_unpacked/141D_1639/range_rsl_mm" color="#17becf"/>
+         <curve name="/uwb/range_unpacked/198C_5950/range_rsl_mm" color="#bcbd22"/>
+         <curve name="/uwb/range_unpacked/141D_198C/range_rsl_mm" color="#1f77b4"/>
+         <curve name="/uwb/range_unpacked/198C_1B20/range_rsl_mm" color="#d62728"/>
+         <curve name="/uwb/range_unpacked/1639_198C/range_rsl_mm" color="#1ac938"/>
+         <curve name="/uwb/range_unpacked/1B20_5950/range_rsl_mm" color="#ff7f0e"/>
+         <curve name="/uwb/range_unpacked/1639_1B20/range_rsl_mm" color="#f14cc1"/>
+         <curve name="/uwb/range_unpacked/1639_5950/range_rsl_mm" color="#9467bd"/>
         </plot>
        </DockArea>
        <DockArea name="...">
@@ -55,7 +55,7 @@
         <plot style="Lines" mode="TimeSeries">
          <range right="29.640727" top="1359.307495" bottom="1094.392700" left="9.649311"/>
          <limitY/>
-         <curve name="/uwb/range_unpacked/141D_1B20/range_rsl" color="#9467bd"/>
+         <curve name="/uwb/range_unpacked/141D_1B20/range_rsl_mm" color="#9467bd"/>
          <curve name="/uwb/vrpn_unpacked/141D_1B20/data" color="#17becf"/>
         </plot>
        </DockArea>
