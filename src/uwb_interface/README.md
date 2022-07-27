@@ -1,10 +1,10 @@
 # UWB Interface Package
 
-The UWB Interface package was designed to publish ranging data received from the EVK1000 to a ROS topic. The EVK1000s perform two way ranging with each other and output hexedecimal encoded results for each ranging exchange to their microUSB ports. This node is meant to be run on a separate computer to receive decode, and repackage the data so it can be published to the `/uwb/range` ROS topic. The repackaged data has the following characteristics:
+The UWB Interface package was designed to publish ranging data received from the EVK1000 to a ROS topic. The EVK1000s perform two way ranging with each other and output hexedecimal encoded results for each ranging exchange to their microUSB ports. The `uwb_interface` node is meant to be run on a separate computer to receive decode, and repackage the data so it can be published to ROS topics. A new [`UWBRange`](msg/UWBRange.msg) topic is created for every unique pair of communicating UWBs in the form of `/uwb/data/UWBIdentifierA_UWBIdentifierB` where `UWBIdentifier*` is the 16 character hex string identifying that particular UWB. The repackaged data has the following characteristics:
 
 Field | Description | Data Type/Size | Units
 --- | --- | --- | ---
-timestamp      | Time Stamp                  | (64 bit integer)          | µs
+header         | ROS [std_msgs/Header](https://docs.ros.org/en/lunar/api/std_msgs/html/msg/Header.html)   | 
 source_address | Source Address              | (16 character hex string) |
 anchor_address | Anchor Address              | (16 character hex string) |
 tag_address    | Tag Address                 | (16 character hex string) |
@@ -53,24 +53,7 @@ rosrun uwb_interface uwb_interface_node -p /dev/ttyACM0
 **_NOTE:_** Roscore must be running first.\
 **_NOTE:_** The argument after `-p` is the path to the USB port connection and may not be the same as listed above. See the [Setup Section](##Setup) for how to find the correct path.
 
-To test that the node is functioning correctly run the following in another terminal
-
-```
-rostopic echo /uwb/range
-```
-
-If functioning correctly, messages similar to the following should periodically be printed to the terminal.
-
-```
-source_address: "0000000000001639"                          
-anchor_address: "0000000000001639"                          
-tag_address: "0000000000000CD6"                             
-range_dist_mm: 776                                             
-range_rsl_mm: 741                                              
-range_raw_mm: 553
-rsl: -78.2990036011
----
-```
+To test that the node is functioning correctly, you can run `rostopic list` from another terminal to check that the `uwb/data/UWBIdentifierA_UWBIdentifierB` messages are being published.
 
 ## Troubleshooting
 If you get the error `Error 13 from open: Permission denied`, then likely the current user
