@@ -130,12 +130,12 @@ class AntennaDelayCalibration():
             data_truth = self.truth_cache[sorted_topic_name].getElemBeforeTime(timestamp_measured)
 
             if data_truth is None:
-                rospy.logwarn("No truth measurement before timestamp for %s",sorted_topic_name)
+                rospy.logwarn_throttle(1.0,"No truth measurement before timestamp for %s",sorted_topic_name)
                 return
 
             timestamp_truth = data_truth.header.stamp
             if (timestamp_measured.to_sec() - timestamp_truth.to_sec()) > 1.0:
-                rospy.logwarn("Truth data older than one second for %s", sorted_topic_name)
+                rospy.logwarn_throttle(1.0,"Truth data older than one second for %s", sorted_topic_name)
                 return
 
 

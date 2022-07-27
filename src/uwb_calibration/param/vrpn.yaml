@@ -3,11 +3,11 @@
 # identifiers from the UWB range messages
 # Format is: vrpn_asset_name: "UWB identifier"
 
-uwb_mount_1: "000000000000141D"
-uwb_mount_2: "0000000000001639"
-uwb_mount_3: "0000000000005950"
-uwb_mount_4: "0000000000001B20"
-uwb_mount_5: "000000000000198C"
+uwb_1: "000000000000141D"
+uwb_2: "000000000000198C"
+uwb_3: "000000000000118C"
+uwb_4: "0000000000005950"
+uwb_5: "0000000000001B20"
 
 # rate (in Hz) at which vrpn messages are published
 # This rate is used for approximate time synchronization of all
