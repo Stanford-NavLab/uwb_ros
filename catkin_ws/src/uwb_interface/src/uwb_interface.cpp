@@ -18,7 +18,7 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 #include <sys/file.h>
-
+#include <sys/ioctl.h>
 
 #include <bits/stdc++.h> //split serial input, strok()   
 #include <stdlib.h>     // strtod, strtol
@@ -216,6 +216,7 @@ namespace uwb_interface{
                     printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
                     serial_okay = false;
                 }
+                ioctl(serial_port, TCFLSH, 2); // flush both
 
                 if(serial_okay){
                     serial_configured = true;
