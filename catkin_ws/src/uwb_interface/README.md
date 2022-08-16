@@ -4,7 +4,7 @@ The UWB Interface package was designed to publish ranging data received from the
 
 Field | Description | Data Type/Size | Units
 --- | --- | --- | --- 
-timestamp      | Time Stamp                  | (64 bit integer)          | µs
+timestamp      | Time Stamp                  | (64 bit integer)          | ns
 source_address | Source Address              | (16 character hex string) |
 anchor_address | Anchor Address              | (16 character hex string) | 
 tag_address    | Tag Address                 | (16 character hex string) | 
