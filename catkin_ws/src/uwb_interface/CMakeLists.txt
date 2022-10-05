@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   range_event.msg
+  serial_event.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -199,7 +200,7 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-
+# uwb node
 set(UWB_INTERFACE_DIR
   "src")
 set(UWB_INTERFACE_HEADER
@@ -218,7 +219,29 @@ include_directories(
 
 target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})
 
+
+ # kernel node
+set(KERNEL_MSG_DIR
+  "src")
+set(KERNEL_MSG_HEADER
+  "src/main_kernel.h"
+  "src/kernel_msg.h")
+set(KERNEL_MSG_SRC
+  "src/main_kernel.cpp"
+  "src/kernel_msg.cpp") 
+
+add_executable(kernel_msg_node ${KERNEL_MSG_SRC} ${KERNEL_MSG_HEADER})
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${KERNEL_MSG_DIR}
+)
+
+target_link_libraries(kernel_msg_node ${catkin_LIBRARIES})
+
+
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(kernel_msg_node ${kernel_msg_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

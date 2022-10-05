@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	
+    <arg name="arg_port" />
+    
+    <node pkg="uwb_interface" type="uwb_interface_node" name="$(eval 'uwb_interface_node' + arg('arg_port').replace('/','_'))" args=" -p $(arg arg_port)" respawn="true"/>
+    <node pkg="uwb_interface" type="kernel_msg_node" name="$(eval 'kernel_msg_node' + arg('arg_port').replace('/','_'))" args=" -p $(arg arg_port)" respawn="true"/>
+
+</launch>

@@ -1,12 +1,12 @@
 #include <iostream>
-#include "uwb_interface.h"
+#include "kernel_msg.h"
+
 
 using namespace uwb_interface;
 
-
 int main(int argc, char **argv)
 {
-    std::cout << "UWB interface node started" << std::endl;
+    std::cout << "kernel msg node started" << std::endl;
     ParseOptions(argc, argv);
 
     //need to initialize the modules
@@ -14,12 +14,12 @@ int main(int argc, char **argv)
 
     while(ros::ok()){
         Update();
-        ros::spinOnce();
     }
 
     Cleanup();
 
-    std::cout << "UWB interface node stopped" << std::endl;
+    std::cout << "kernel msg node stopped" << std::endl;
 
     return EXIT_SUCCESS;
+
 }
