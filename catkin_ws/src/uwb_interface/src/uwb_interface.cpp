@@ -2,10 +2,13 @@
 #include <typeinfo>
 #include <iostream>
 #include <algorithm>
+#include <sys/ioctl.h>
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/String.h>
 #include <uwb_interface/range_event.h>
+
 
 // C library headers
 #include <stdio.h> // printf, NULL
@@ -34,12 +37,14 @@ namespace uwb_interface{
     ros::Publisher uwb_range_pub;
     uwb_interface::range_event range_msg;
 
+    ros::Subscriber serial_event_sub;
+
     std::string uwb_port = "";
     int serial_port;
+    bool serial_connected = false;
     bool serial_configured = false;
     bool port_open = false;
-    
-    
+
     
     void ParseOptions(int argc, char **argv){
 
@@ -87,7 +92,9 @@ namespace uwb_interface{
         ros::NodeHandle nh;
 
         uwb_range_pub = nh.advertise<uwb_interface::range_event>("uwb/range", 10); 
-   
+        serial_event_sub = nh.subscribe("uwb/serial_event", 10, &serialEventCallback); 
+        
+        
     }
 
     void Cleanup(){
@@ -99,7 +106,7 @@ namespace uwb_interface{
 
     void Update(){
 
-        if(serial_configured){
+        if(serial_configured && serial_connected){
 
             // Allocate memory for read buffer, set size according to your needs
             int buffer_length = 500;
@@ -116,6 +123,9 @@ namespace uwb_interface{
                 if (n != 0){
                     if( read_buf[pos] == '\n' ) break;
                     pos++;
+                }
+                else {
+                    break;
                 }
             }
 
@@ -218,8 +228,11 @@ namespace uwb_interface{
                 }
                 ioctl(serial_port, TCFLSH, 2); // flush both
 
+                ioctl(serial_port, TCFLSH, 2); 
+
                 if(serial_okay){
                     serial_configured = true;
+                    serial_connected = true;
                 }
             }
 
@@ -328,8 +341,8 @@ namespace uwb_interface{
                         return;
                     }                  
                     range_msg.rsl = ((float)((int32_t)strtol(token, 0, 16)))/1000.0;
-
                     break;
+
                 default:
                     token = NULL; //stop processing the serial data
                     break;
@@ -346,5 +359,19 @@ namespace uwb_interface{
         range_msg.timestamp = nanoseconds;
 
         uwb_range_pub.publish(range_msg);
+    }
+
+    void serialEventCallback(const uwb_interface::serial_event::ConstPtr& serial_event_msg) {
+        uwb_interface::serial_event event_msg = *serial_event_msg;
+        if (uwb_port.find(event_msg.port) != std::string::npos) {
+            if (event_msg.connection_event == 1) {
+                // std::cout << "connected" << std::endl;
+                serial_connected = true;
+            }
+            else if (event_msg.connection_event == 0) {
+                // std::cout << "disconnected" << std::endl;
+                serial_connected = false;
+            }
+        }
     }
 }
